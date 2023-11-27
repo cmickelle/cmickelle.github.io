@@ -1,12 +1,73 @@
-### Este é o conteúdo do arquivo md
+### Descrição do que será realizado no Projeto:
+Utilizaremos da linguagem *Python* para leitura dos dados de um arquivo *markdown* e um arquivo *JSON*, gerando uma página *index.html* estático, onde subiremos ao Git Pages. 
+O arquivo *markdown* terá o conteúdo da nossa página e o *JSON* as informações de título, descrição e autores. 
+Para realizarmos tudo isso, faremos a instalação do Git Flow para configuração de um fluxo de trabalho onde criaremos uma branch de desenvolvimento (*develop*) e também criaremos um ambiente virtual (*venv*) para isolarmos o nosso projeto. 
+No Github usaremos o Actions para automatizar a cada *push* a atualização da nossa página hospedada no Git Pages.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus at euismod sem. Nulla in ante imperdiet, mattis tortor vel, ullamcorper quam. Nam tincidunt euismod vehicula. Aenean cursus, augue aliquet condimentum porttitor, massa augue malesuada purus, vel sodales ipsum risus ut nunc. Maecenas lacinia sagittis odio, a rhoncus libero auctor id. Nulla euismod lobortis lectus eu molestie. Suspendisse laoreet dolor ex, a euismod lectus tristique ac. Donec feugiat augue est, a semper ex viverra in. Nullam fermentum lectus nec arcu malesuada lacinia. Pellentesque sit amet velit ac nisl mollis dignissim. Nunc lobortis egestas ligula eget bibendum. Sed vel nunc ac quam porta scelerisque in id felis. Nullam condimentum, dolor at consectetur commodo, neque ligula interdum turpis, id faucibus diam mi id diam. Maecenas accumsan egestas nisl vel fringilla. Quisque sed sollicitudin dui, in condimentum magna. Aliquam posuere erat vitae risus tempus feugiat.
+### Instalação e Execução do Git Flow:
+```
+sudo apt-get install git-flow
+git flow init
+```
 
-Nam ac feugiat orci. Integer eget suscipit elit. Duis quis justo convallis, tempor ipsum varius, porta dolor. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent varius facilisis ex vitae cursus. Donec cursus a lectus eu fringilla. Sed condimentum justo et blandit scelerisque. Morbi condimentum dictum leo quis mattis. Praesent fermentum odio ut blandit congue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer luctus vestibulum justo, congue imperdiet tellus tempus quis.
+### Foi criado uma nova branch para desenvolvimento do projeto:
+```bash
+git branch -l
+* develop
+main
 
-Nam hendrerit euismod rhoncus. Donec ultricies aliquet velit at dapibus. Vestibulum vitae nibh cursus, elementum tellus et, scelerisque dolor. Nam accumsan risus nisl, ut pharetra diam venenatis faucibus. Nulla imperdiet risus enim, sed bibendum velit consequat ut. Donec dapibus, turpis eu finibus accumsan, sem odio lacinia massa, id rutrum augue magna id quam. Pellentesque vehicula mi quis orci iaculis scelerisque. Etiam sit amet mi ut massa molestie commodo non sed risus. Donec mollis rhoncus ante nec feugiat. Nunc ultrices mi massa, non euismod metus eleifend non. Proin sit amet lacinia erat, sit amet laoreet eros. Maecenas lobortis tortor quis tellus tincidunt fringilla. Sed cursus, elit vitae aliquam fringilla, metus elit laoreet lorem, vel pharetra magna lectus non lorem. Praesent id justo euismod, vulputate turpis eget, semper ligula. Morbi at nulla pulvinar, faucibus eros a, laoreet dolor. Sed at accumsan ligula.
+git checkout develop
+```
 
-Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Proin aliquet nibh ut purus suscipit pulvinar. Donec suscipit imperdiet risus eu venenatis. In id massa volutpat, efficitur dui eu, congue eros. Curabitur scelerisque ac lectus at porta. Pellentesque dui tellus, laoreet sit amet tristique quis, pretium ut enim. Sed consectetur nibh non nulla efficitur, nec consectetur mi maximus. Duis eu pretium est. Nunc eu tellus pretium, volutpat urna vel, tincidunt quam.
+### Arquivos utilizados:
+- **Markdown:** wiki.md (conteúdo escrito em md);
+- **JSON:** config.json (título, descrição e autores);
+- **HTML:** layout.html (template) e index.html (escrito a partir do script.py);
+- **Python:** script.py (responsável em escrever nosso index.html a partir dos outros arquivos).
 
-Fusce efficitur finibus lacinia. Duis eu suscipit enim. Cras turpis elit, tristique in elementum malesuada, lobortis in lacus. Pellentesque eget vehicula enim, quis volutpat tortor. Nunc suscipit mollis mi, sed mattis nunc condimentum accumsan. Nulla ex magna, facilisis varius sollicitudin in, malesuada ut nulla. Sed urna arcu, convallis at nulla vel, fermentum pellentesque ligula. Quisque nec felis porttitor, auctor magna nec, pulvinar purus. Nam sodales volutpat consectetur. Cras eget egestas sem. Donec tempus id sem ac semper.
+### Criação de um Ambiente Virtual:
+**Para isolarmos as dependências do projeto de modo que cada projeto tenha suas bibliotecas separadas do sistema principal, criamos um ambiente virtual:**
+
+```python
+python3 -m venv venv
+```
+
+**Ativamos nosso ambiente virtual (linux):**
+```bash
+source venv/bin/activate
+```
+
+**Instalamos as bibliotecas que utilizaremos no Script:**
+```python
+pip install jinja2 markdown2
+```
+
+### Script em Python:
+```python
+from markdown2 import markdown 
+from jinja2 import Environment, FileSystemLoader
+from json import load
+
+template_env = Environment(loader=FileSystemLoader(searchpath='./'))
+template = template_env.get_template('layout.html')
+
+with open('wiki.md') as markdown_file:
+    wiki = markdown(
+        markdown_file.read(),
+        extras=['fenced-code-blocks', 'code-friendly'])
+
+with open('config.json') as config_file:
+    config = load(config_file)
+
+with open('index.html', 'w') as output_file:
+    output_file.write(
+        template.render(
+            title=config['title'],
+            description=config['description'],
+            authors=config['authors'],
+            wiki=wiki
+        )
+    )
+```
+
 
