@@ -13,7 +13,7 @@ with open('wiki.md') as markdown_file:
 with open('config.json') as config_file:
     config = load(config_file)
 
-with open('index.html', 'w') as output_file:
+with open('../index.html', 'w') as output_file:
     output_file.write(
         template.render(
             title=config['title'],
